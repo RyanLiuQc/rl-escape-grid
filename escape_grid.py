@@ -28,21 +28,28 @@ class Grid:
             3: (0, 1) # right
         }
 
-    def reset() -> None:
+    def reset(self) -> None:
         pass
 
-    def __str__(self):
-        grid = np.zeros(shape=(self.height,self.width))
-        for pos in self.obstacles:
-            grid[pos] = 1
+    def step(self):
+        pass
+
+    # improve render 
+    def render(self):
+        grid = np.full((self.height, self.width), fill_value=". ", dtype=object)
+        grid[self.current_state] = "X "
+        grid[self.end_state] = "G "
+
+        for obs in self.obstacles:
+            grid[obs] = "T "
         
-        grid[self.current_state] = 2
-
-        return str(grid)
-
+        print("\n" + "-" * 15)
+        for row in grid:
+            print("".join(row))
+        print("-" * 15)
 
         
 
 if __name__ == "__main__":
     grid = Grid()
-    print(grid)
+    grid.render()
