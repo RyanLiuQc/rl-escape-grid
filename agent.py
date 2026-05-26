@@ -46,13 +46,25 @@ def train_q_learning_agent(
 
     for episode in range(episodes):
         state = env.reset()
-        step = 1
-        
+        step = 1   
+        total_reward = 0
+
         while state != env.end_state:
-        # choose an action using ucb or epsilon-greedy
+            row, col = state[0], state[1]
+
+            # choose an action using ucb or epsilon-greedy
             action_t = choose_action("ucb", epsilon, state, q_table, action_count, step, env)
-            action_count[action_t] += 1
+            action_count[row, col, action_t] += 1
+
+            # move by one step with chosen action
+            # this already updates internal variable so setting state here does not really matter i think
+            state, reward, done = env.step(action_t) 
+
+            q_table[row,col, action_t] += reward
+
+            total_reward += reward
         
+        reward_history.append(total_reward)
 
     return q_table, reward_history
 
@@ -63,7 +75,7 @@ def choose_action(
         Q_t: NDArray[np.float64],
         action_count: NDArray, # match q_table shape, and integers represent counts for each action at their respective index
         step: int,
-        env: Grid) -> np.int8:
+        env: Grid) -> int:
     # action_selection_method = "ucb" or "epsilon-greedy"
 
     # choosing action with ucb
@@ -87,4 +99,4 @@ def choose_action(
 
     # write with epsilon-greedy next
     
-    return a
+    return int(a)
