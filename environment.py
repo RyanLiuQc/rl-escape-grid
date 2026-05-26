@@ -28,8 +28,9 @@ class Grid:
             3: (0, 1) # right
         }
 
-    def reset(self) -> None:
-        pass
+    def reset(self) -> tuple:
+        self.current_state = self.start_state
+        return self.current_state
 
     def step(self, action: int) -> tuple:
         if action not in self.action_space:
@@ -53,7 +54,7 @@ class Grid:
 
         return next_state, reward, done
 
-    def calc_reward(self, next_state):
+    def calc_reward(self, next_state) -> tuple:
         if next_state == self.end_state:
             reward = 10
             done = True
