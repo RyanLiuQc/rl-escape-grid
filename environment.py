@@ -31,8 +31,40 @@ class Grid:
     def reset(self) -> None:
         pass
 
-    def step(self):
-        pass
+    def step(self, action: int) -> tuple:
+        if action not in self.action_space:
+            raise ValueError(f"No action {action}")
+        
+        step_row, step_col = self.action_map[action]
+        row, col = self.current_state
+
+        next_row = self.current_state[0] + step_row
+        next_col = self.current_state[1] + step_col
+
+        if 0 <= row + step_row < self.height or 0 <= col + step_col < self.width:
+            next_state = (next_row, next_col)
+        else:
+            next_state = self.current_state    
+            
+        self.current_state = next_state
+        
+        # the new state we will be in
+        reward, done = self.calc_reward(next_state)
+
+        return next_state, reward, done
+
+    def calc_reward(self, next_state):
+        if next_state == self.end_state:
+            reward = 10
+            done = True
+        elif next_state in self.obstacles:
+            reward = -5
+            done = True
+        else:
+            reward = -1
+            done = False
+        return reward,done
+
 
     # improve render 
     def render(self):
@@ -52,4 +84,11 @@ class Grid:
 
 if __name__ == "__main__":
     grid = Grid()
+    grid.render()
+    grid.step(3)
+    grid.step(3)
+    grid.render()
+    grid.step(3)
+    grid.render()
+    grid.step(3)
     grid.render()
