@@ -4,6 +4,7 @@ from numpy.typing import NDArray
 
 from environment import Grid
 
+# epsilon-greedy method for action selection is not implemented yet
 
 def train_q_learning_agent(
     env: Grid,
@@ -48,8 +49,10 @@ def train_q_learning_agent(
         state = env.reset()
         step = 1   
         total_reward = 0
+        done = False
 
-        while state != env.end_state:
+        print("episode:", episode)
+        while not done or state != env.end_state:
             row, col = state[0], state[1]
 
             # choose an action using ucb or epsilon-greedy
@@ -58,11 +61,15 @@ def train_q_learning_agent(
 
             # move by one step with chosen action
             # this already updates internal variable so setting state here does not really matter i think
-            state, reward, done = env.step(action_t) 
+            state, reward, done = env.step(action_t) # done variable is not used here so _
 
+            # TODO: fix this with off-policy TD update rule. curr only goes to -inf
             q_table[row,col, action_t] += reward
 
             total_reward += reward
+            
+            print("step:", step)
+            step +=1
         
         reward_history.append(total_reward)
 
