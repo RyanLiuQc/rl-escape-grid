@@ -41,8 +41,9 @@ class Grid:
 
         next_row = self.current_state[0] + step_row
         next_col = self.current_state[1] + step_col
-
-        if 0 <= row + step_row < self.height or 0 <= col + step_col < self.width:
+        
+        print("step_row:", step_row, "step_col:", step_col)
+        if 0 <= row + step_row < self.height and 0 <= col + step_col < self.width:
             next_state = (next_row, next_col)
         else:
             next_state = self.current_state    

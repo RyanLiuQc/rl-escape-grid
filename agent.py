@@ -45,33 +45,44 @@ def train_q_learning_agent(
     # at the specific state
     action_count = np.zeros(shape=q_table.shape) 
 
+    # for ucb log's scaling
+    global_step = 1
+
     for episode in range(episodes):
         state = env.reset()
-        step = 1   
+        # step = 1   
         total_reward = 0
         done = False
 
         print("episode:", episode)
-        while not done or state != env.end_state:
+        while not done and state != env.end_state:
+            print(state)
             row, col = state[0], state[1]
 
             # choose an action using ucb or epsilon-greedy
-            action_t = choose_action("ucb", epsilon, state, q_table, action_count, step, env)
+            action_t = choose_action("ucb", epsilon, state, q_table, action_count, global_step, env)
+            print(action_t)
             action_count[row, col, action_t] += 1
 
             # move by one step with chosen action
             # this already updates internal variable so setting state here does not really matter i think
-            state, reward, done = env.step(action_t) # done variable is not used here so _
+            next_state, reward, done = env.step(action_t) 
+            next_row, next_col = next_state[0], next_state[1]
 
             # TODO: fix this with off-policy TD update rule. curr only goes to -inf
-            q_table[row,col, action_t] += reward
+            # update estimate reward of taking action_t at previous state
+            q_table[row,col, action_t] += alpha * (reward + gamma*max(q_table[next_row, next_col, :] - q_table[row, col, action_t]))  
+
+            state = next_state
 
             total_reward += reward
             
-            print("step:", step)
-            step +=1
+            
+            # print("step:", global_step)
+            global_step +=1
         
         reward_history.append(total_reward)
+        print("DONE episode:", episode)
 
     return q_table, reward_history
 
