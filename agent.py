@@ -18,7 +18,7 @@ def train_q_learning_agent(
     """
     Trains a tabular Q-learning agent on the 5x5 Gridworld.
     
-    INPUTS:
+    input:
     -------
     - env: The initialized Grid class instance.
     - episodes: Total number of games to play to let the agent learn.
@@ -26,13 +26,12 @@ def train_q_learning_agent(
     - gamma: How much the agent values future rewards vs immediate ones.
     - epsilon_start/decay/min: Parameters controlling the exploration schedule.
     
-    OUTPUTS:
-    --------
+    output:
     Returns a tuple containing:
     1. q_table: A NumPy array of shape (5, 5, 4) containing the learned 
                 action-values for every state-action pair.
     2. reward_history: A list of floats containing the total cumulative reward 
-                       earned in each consecutive episode (used to plot your 
+                       earned in each consecutive episode (used to plot 
                        learning curve).
     """
     
@@ -61,7 +60,6 @@ def train_q_learning_agent(
 
             # choose an action using ucb or epsilon-greedy
             action_t = choose_action("ucb", epsilon, state, q_table, action_count, global_step, env)
-            print(action_t)
             action_count[row, col, action_t] += 1
 
             # move by one step with chosen action
@@ -69,16 +67,11 @@ def train_q_learning_agent(
             next_state, reward, done = env.step(action_t) 
             next_row, next_col = next_state[0], next_state[1]
 
-            # TODO: fix this with off-policy TD update rule. curr only goes to -inf
             # update estimate reward of taking action_t at previous state
-            q_table[row,col, action_t] += alpha * (reward + gamma*max(q_table[next_row, next_col, :] - q_table[row, col, action_t]))  
+            q_table[row,col, action_t] += alpha * (reward + gamma*np.max(q_table[next_row, next_col, :]) - q_table[row, col, action_t])  
 
             state = next_state
-
             total_reward += reward
-            
-            
-            # print("step:", global_step)
             global_step +=1
         
         reward_history.append(total_reward)
