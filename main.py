@@ -8,7 +8,7 @@ def main():
     env = Grid()
 
     print("Training agent...")
-    q_table, reward_history = train_q_learning_agent(env, episodes=100)
+    q_table, reward_history = train_q_learning_agent(env)
     print("Done!")
 
     l = [[int(np.argmax(actions)) for actions in row] for row in q_table]
